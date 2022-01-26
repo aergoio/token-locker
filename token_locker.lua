@@ -15,11 +15,35 @@ To use:
 ]]
 
 state.var {
-  locks = state.map(),
-  per_token = state.map()
+  locks = state.map(),     -- address -> list of locks
+  per_token = state.map()  -- address -> bignum
 }
 
+-- A internal type check function
+-- @type internal
+-- @param x variable to check
+-- @param t (string) expected type
+local function _typecheck(x, t)
+  if (x and t == 'address') then
+    assert(type(x) == 'string', "address must be string type")
+    -- check address length
+    assert(52 == #x, string.format("invalid address length: %s (%s)", x, #x))
+    -- check character
+    local invalidChar = string.match(x, '[^123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]')
+    assert(nil == invalidChar, string.format("invalid address format: %s contains invalid char %s", x, invalidChar or 'nil'))
+  elseif (x and t == 'ubig') then
+    -- check unsigned bignum
+    assert(bignum.isbignum(x), string.format("invalid type: %s != %s", type(x), t))
+    assert(x >= bignum.number(0), string.format("%s must be positive number", bignum.tostring(x)))
+  else
+    -- check default lua types
+    assert(type(x) == t, string.format("invalid type: %s != %s", type(x), t or 'nil'))
+  end
+end
+
 function tokensReceived(operator, from, amount, period)
+  _typecheck(from, 'address')
+  _typecheck(amount, 'ubig')
 
   -- the contract calling this function
   local token = system.getSender()
@@ -28,7 +52,6 @@ function tokensReceived(operator, from, amount, period)
   local account = from
 
   -- convert the amount to bignumber
-  --amount = bignum.number(amount)
   assert(bignum.compare(amount, 0) > 0, "the amount must be positive")
 
   -- convert the period to number
@@ -62,12 +85,15 @@ end
 function list_locked_tokens(account)
   if account == nil then
     account = system.getSender()
+  else
+    _typecheck(account, 'address')
   end
   local account_locks = locks[account]
   return json.encode(account_locks)
 end
 
 function get_total_locked(token)
+  _typecheck(token, 'address')
   return bignum.tostring(per_token[token] or bignum.number(0))
 end
 
@@ -90,6 +116,9 @@ function withdraw(index)
   -- check if the tokens are unlocked
   assert(lock["expiration_time"] <= system.getTimestamp(), "these tokens are locked until " .. lock["expiration_time"] .. ". now is " .. system.getTimestamp())
 
+  local token = lock["token"]
+  local amount = lock["amount"]
+
   -- update the state BEFORE any external call to avoid reentrancy attack
 
   -- are there more than 1 lock for this account?
@@ -104,11 +133,10 @@ function withdraw(index)
   end
 
   -- update the total locked amount for this token
-  local token = lock["token"]
-  per_token[token] = per_token[token] - lock["amount"]
+  per_token[token] = per_token[token] - amount
 
   -- transfer the tokens
-  contract.call(lock["token"], "transfer", account, lock["amount"])
+  contract.call(token, "transfer", account, amount)
 
 end
 
