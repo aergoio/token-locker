@@ -12,7 +12,7 @@ By knowing the total supply of a token and subtracting the total
 locked amount we can calculate the circulating supply
 
 
-## Usage
+# Usage
 
 Transfer tokens to this contract, and specify the period to
 lock them as an argument in the transfer function.
@@ -31,7 +31,7 @@ Where:
 * `period` is the amount of time to lock the tokens, in seconds
 
 
-### Locking Aergo
+## Locking Aergo Tokens
 
 In this case we use the WAERGO token contract
 
@@ -45,16 +45,30 @@ contract.call.value(amount)(waergo, "wrap_to", token_locker, period)
 Where `waergo` is the address of the WAERGO contract
 
 
-### Withdraw
+## Withdraw
 
 Call the `withdraw` function
 
 If your account has more than one lock, specify the index (integer)
-of the token lock to be withdrawn
+of the token lock to be withdrawn (base 1).
 
-To get the list of locked tokens for your account, use the
-`list_locked_tokens` function
+If you only have 1 lock, then you can let the argument empty.
 
 If you have locked aergo token then you will receive WAERGO back. To
 convert to native tokens just use the `unwrap` function on the
-WAERGO contract
+WAERGO contract.
+
+
+## Locked Tokens per Account
+
+To get the list of locked tokens for an account, use the
+`list_locked_tokens()` function, passing the accound address as the
+argument.
+
+If retrieving for your own account, just let the argument empty (nil).
+
+
+## Total Locked Amount per Token
+
+To discover the total locked amount for a specific token we use the
+`get_total_locked()` function, passing the token address as the argument.
