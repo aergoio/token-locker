@@ -15,13 +15,14 @@ To use:
 ]]
 
 state.var {
-  locks = state.map()
+  locks = state.map(),
+  per_token = state.map()
 }
 
 function tokensReceived(operator, from, amount, period)
 
   -- the contract calling this function
-  local token_address = system.getSender()
+  local token = system.getSender()
 
   -- who sent the tokens
   local account = from
@@ -37,7 +38,7 @@ function tokensReceived(operator, from, amount, period)
 
   local lock = {
     amount = amount,
-    token = token_address,
+    token = token,
     expiration_time = system.getTimestamp() + period
   }
 
@@ -53,11 +54,18 @@ function tokensReceived(operator, from, amount, period)
   -- save it
   locks[account] = account_locks
 
+  -- update the total locked amount for this token
+  per_token[token] = (per_token[token] or bignum.number(0)) + amount
+
 end
 
 function list_locked_tokens(account)
   local account_locks = locks[account]
   return json.encode(account_locks)
+end
+
+function get_total_locked(token)
+  return bignum.tostring(per_token[token] or bignum.number(0))
 end
 
 function withdraw(index)
@@ -92,13 +100,16 @@ function withdraw(index)
     locks:delete(account)
   end
 
+  -- update the total locked amount for this token
+  per_token[token] = per_token[token] - lock["amount"]
+
   -- transfer the tokens
   contract.call(lock["token"], "transfer", lock["account"], lock["amount"])
 
 end
 
 abi.register(tokensReceived, withdraw)
-abi.register_view(list_locked_tokens)
+abi.register_view(list_locked_tokens, get_total_locked)
 
 --[[
 
