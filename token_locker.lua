@@ -60,6 +60,9 @@ function tokensReceived(operator, from, amount, period)
 end
 
 function list_locked_tokens(account)
+  if account == nil then
+    account = system.getSender()
+  end
   local account_locks = locks[account]
   return json.encode(account_locks)
 end
@@ -85,7 +88,7 @@ function withdraw(index)
   assert(lock ~= nil, "no locked tokens at this index")
 
   -- check if the tokens are unlocked
-  assert(lock["expiration_time"] <= system.getTimestamp(), "these tokens are locked until " .. lock["expiration_time"])
+  assert(lock["expiration_time"] <= system.getTimestamp(), "these tokens are locked until " .. lock["expiration_time"] .. ". now is " .. system.getTimestamp())
 
   -- update the state BEFORE any external call to avoid reentrancy attack
 
@@ -101,10 +104,11 @@ function withdraw(index)
   end
 
   -- update the total locked amount for this token
+  local token = lock["token"]
   per_token[token] = per_token[token] - lock["amount"]
 
   -- transfer the tokens
-  contract.call(lock["token"], "transfer", lock["account"], lock["amount"])
+  contract.call(lock["token"], "transfer", account, lock["amount"])
 
 end
 
