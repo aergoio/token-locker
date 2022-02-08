@@ -15,8 +15,8 @@ To use:
 ]]
 
 state.var {
-  locks = state.map(),     -- address (user)  -> list of locks
-  per_token = state.map()  -- address (token) -> list of locks
+  _user_locks = state.map(),  -- address (user)  -> list of locks
+  _token_locks = state.map()  -- address (token) -> list of locks
 }
 
 -- A internal type check function
@@ -66,7 +66,7 @@ function tokensReceived(operator, from, amount, period)
   }
 
   -- check if this account already have any locked tokens
-  local account_locks = locks[account]
+  local account_locks = _user_locks[account]
   if account_locks == nil then
     account_locks = {}
   end
@@ -75,7 +75,7 @@ function tokensReceived(operator, from, amount, period)
   table.insert(account_locks, lock)
 
   -- save it
-  locks[account] = account_locks
+  _user_locks[account] = account_locks
 
 
   -- update the list of locks for this token
@@ -87,7 +87,7 @@ function tokensReceived(operator, from, amount, period)
   }
 
   -- check if this token already have any locks
-  local token_locks = per_token[token]
+  local token_locks = _token_locks[token]
   if token_locks == nil then
     token_locks = {}
   end
@@ -96,7 +96,7 @@ function tokensReceived(operator, from, amount, period)
   table.insert(token_locks, lock2)
 
   -- save it
-  per_token[token] = token_locks
+  _token_locks[token] = token_locks
 
 end
 
@@ -106,13 +106,13 @@ function locks_per_account(account)
   else
     _typecheck(account, 'address')
   end
-  local account_locks = locks[account]
+  local account_locks = _user_locks[account]
   return json.encode(account_locks)
 end
 
 function locks_per_token(token)
   _typecheck(token, 'address')
-  local token_locks = per_token[token]
+  local token_locks = _token_locks[token]
   return json.encode(token_locks)
 end
 
@@ -120,7 +120,7 @@ end
 -- ie, in which the lock has not expired
 function get_total_locked(token)
   _typecheck(token, 'address')
-  local token_locks = per_token[token]
+  local token_locks = _token_locks[token]
   if token_locks == nil then
     return bignum.number(0)
   end
@@ -141,7 +141,7 @@ function withdraw(index)
   local account = system.getSender()
 
   -- get the locked tokens from this account
-  local account_locks = locks[account]
+  local account_locks = _user_locks[account]
   assert(account_locks ~= nil, "no locked tokens for this account")
 
   -- get the locked tokens at the given index
@@ -164,15 +164,15 @@ function withdraw(index)
     -- remove the lock from the list
     table.remove(account_locks, index)
     -- save the updated list
-    locks[account] = account_locks
+    _user_locks[account] = account_locks
   else
     -- no more locks for this account
-    locks:delete(account)
+    _user_locks:delete(account)
   end
 
   -- update the list of locks for this token
 
-  local token_locks = per_token[token]
+  local token_locks = _token_locks[token]
 
   -- are there more than 1 lock for this account?
   if #token_locks > 1 then
@@ -183,13 +183,13 @@ function withdraw(index)
         -- remove the lock from the list
         table.remove(token_locks, index)
         -- save the updated list
-        per_token[token] = token_locks
+        _token_locks[token] = token_locks
         break
       end
     end
   else
     -- no more locks for this token
-    per_token:delete(token)
+    _token_locks:delete(token)
   end
 
   -- transfer the tokens
