@@ -62,10 +62,17 @@ WAERGO contract.
 ## Locked Tokens per Account
 
 To get the list of locked tokens for an account, use the
-`list_locked_tokens()` function, passing the accound address as the
+`locks_per_account()` function, passing the account address as the
 argument.
 
 If retrieving for your own account, just let the argument empty (nil).
+
+
+## Locked Tokens per Account
+
+To get the list of locks for a token, use the
+`locks_per_token()` function, passing the token address as the
+argument.
 
 
 ## Total Locked Amount per Token

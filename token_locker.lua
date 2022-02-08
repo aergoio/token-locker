@@ -15,8 +15,8 @@ To use:
 ]]
 
 state.var {
-  locks = state.map(),     -- address -> list of locks
-  per_token = state.map()  -- address -> bignum
+  locks = state.map(),     -- address (user)  -> list of locks
+  per_token = state.map()  -- address (token) -> list of locks
 }
 
 -- A internal type check function
@@ -77,12 +77,30 @@ function tokensReceived(operator, from, amount, period)
   -- save it
   locks[account] = account_locks
 
-  -- update the total locked amount for this token
-  per_token[token] = (per_token[token] or bignum.number(0)) + amount
+
+  -- update the list of locks for this token
+
+  local lock2 = {
+    amount = amount,
+    account = account,
+    expiration_time = lock["expiration_time"]
+  }
+
+  -- check if this token already have any locks
+  local token_locks = per_token[token]
+  if token_locks == nil then
+    token_locks = {}
+  end
+
+  -- add the new lock to the list (use an array of tables)
+  table.insert(token_locks, lock2)
+
+  -- save it
+  per_token[token] = token_locks
 
 end
 
-function list_locked_tokens(account)
+function locks_per_account(account)
   if account == nil then
     account = system.getSender()
   else
@@ -92,9 +110,29 @@ function list_locked_tokens(account)
   return json.encode(account_locks)
 end
 
+function locks_per_token(token)
+  _typecheck(token, 'address')
+  local token_locks = per_token[token]
+  return json.encode(token_locks)
+end
+
+-- return the total amount that is really locked,
+-- ie, in which the lock has not expired
 function get_total_locked(token)
   _typecheck(token, 'address')
-  return bignum.tostring(per_token[token] or bignum.number(0))
+  local token_locks = per_token[token]
+  if token_locks == nil then
+    return bignum.number(0)
+  end
+  local now = system.getTimestamp()
+  local total_locked = bignum.number(0)
+  for _,lock in ipairs(token_locks) do
+    if lock["expiration_time"] > now then
+      --total_locked = total_locked + lock["amount"]
+      total_locked:add(lock["amount"])
+    end
+  end
+  return bignum.tostring(total_locked)
 end
 
 function withdraw(index)
@@ -132,8 +170,27 @@ function withdraw(index)
     locks:delete(account)
   end
 
-  -- update the total locked amount for this token
-  per_token[token] = per_token[token] - amount
+  -- update the list of locks for this token
+
+  local token_locks = per_token[token]
+
+  -- are there more than 1 lock for this account?
+  if #token_locks > 1 then
+    for index,lock2 in ipairs(tolen_locks) do
+      if lock2["expiration_time"] == lock["expiration_time"] and
+         lock2["account"] == account and
+         lock2["amount"] == amount then
+        -- remove the lock from the list
+        table.remove(token_locks, index)
+        -- save the updated list
+        per_token[token] = token_locks
+        break
+      end
+    end
+  else
+    -- no more locks for this token
+    per_token:delete(token)
+  end
 
   -- transfer the tokens
   contract.call(token, "transfer", account, amount)
@@ -141,14 +198,4 @@ function withdraw(index)
 end
 
 abi.register(tokensReceived, withdraw)
-abi.register_view(list_locked_tokens, get_total_locked)
-
---[[
-
-Available Lua modules:
-  string  math  table  bit
-
-Available Aergo modules:
-  system  contract  db  crypto  bignum  json
-
-]]
+abi.register_view(locks_per_account, locks_per_token, get_total_locked)
