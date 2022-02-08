@@ -1,0 +1,12 @@
+inject ac1 100000000000000000000
+deploy ac1 0 arc1_factory ../ARC1-Extensions/factory/output.lua []
+# deploy ac1 0 waergo ../wrapped-aergo/waergo.lua []
+deploy ac1 0 token_locker token_locker.lua `[]`
+call ac1 0 arc1_factory new_token `["Ethereum","ETH",18,1000,{}]`
+getstate token_locker
+call ac1 0 AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd transfer `["AmhWzdfUnsj533eUWDzELtTTYSuAcZ9SnXj6wTr7xQhFSyiQmGyS","1500000000000000000",90]`
+call ac1 0 AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd transfer `["AmhWzdfUnsj533eUWDzELtTTYSuAcZ9SnXj6wTr7xQhFSyiQmGyS","2500000000000000000",180]`
+# queries
+call ac1 0 token_locker locks_per_account `[]`
+call ac1 0 token_locker locks_per_token `["AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"]`
+call ac1 0 token_locker get_total_locked `["AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"]`
