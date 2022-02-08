@@ -120,14 +120,13 @@ function get_total_locked(token)
   _typecheck(token, 'address')
   local token_locks = _token_locks[token]
   if token_locks == nil then
-    return bignum.number(0)
+    return bignum.tostring(bignum.number(0))
   end
   local now = system.getTimestamp()
   local total_locked = bignum.number(0)
   for _,lock in ipairs(token_locks) do
     if lock["expiration_time"] > now then
-      --total_locked = total_locked + lock["amount"]
-      total_locked:add(lock["amount"])
+      total_locked = total_locked + lock["amount"]
     end
   end
   return bignum.tostring(total_locked)
@@ -174,7 +173,7 @@ function withdraw(index)
 
   -- are there more than 1 lock for this account?
   if #token_locks > 1 then
-    for index,lock2 in ipairs(tolen_locks) do
+    for index,lock2 in ipairs(token_locks) do
       if lock2["expiration_time"] == lock["expiration_time"] and
          lock2["account"] == account and
          lock2["amount"] == amount then
