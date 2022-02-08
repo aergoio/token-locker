@@ -12,6 +12,14 @@ By knowing the total supply of a token and subtracting the total
 locked amount we can calculate the circulating supply
 
 
+# Token Locker Address
+
+<table>
+  <tr><td>testnet</td><td>AmgrjeKuvaEo832iU8Fma4FFN8QgRrnkQkaVSkCj2E8HErP8QETH</td></tr>
+  <tr><td>alphanet</td><td>AmhLjApNGgXSJYU4bMsa8Uwya1Q1BddkYYUvKdYRAyw8R5Tr9Zc5</td></tr>
+</table>
+
+
 # Usage
 
 Transfer tokens to this contract, and specify the period to
