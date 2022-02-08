@@ -35,6 +35,11 @@ local function _typecheck(x, t)
     -- check unsigned bignum
     assert(bignum.isbignum(x), string.format("invalid type: %s != %s", type(x), t))
     assert(x >= bignum.number(0), string.format("%s must be positive number", bignum.tostring(x)))
+  elseif (x and t == 'uint') then
+    -- check unsigned integer
+    assert(type(x) == 'number', string.format("invalid type: %s != number", type(x)))
+    assert(math.floor(x) == x, "the number must be an integer")
+    assert(x >= 0, "the number must be 0 or positive")
   else
     -- check default lua types
     assert(type(x) == t, string.format("invalid type: %s != %s", type(x), t or 'nil'))
@@ -44,20 +49,13 @@ end
 function tokensReceived(operator, from, amount, period)
   _typecheck(from, 'address')
   _typecheck(amount, 'ubig')
+  _typecheck(period, 'uint')
 
   -- the contract calling this function
   local token = system.getSender()
 
   -- who sent the tokens
   local account = from
-
-  -- convert the amount to bignumber
-  assert(bignum.compare(amount, 0) > 0, "the amount must be positive")
-
-  -- convert the period to number
-  if type(period) ~= 'number' then
-    period = tonumber(period)
-  end
 
   local lock = {
     amount = amount,
