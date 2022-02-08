@@ -52,7 +52,18 @@ Call the `withdraw` function
 If your account has more than one lock, specify the index (integer)
 of the token lock to be withdrawn (base 1).
 
+```lua
+contract.call(token_locker, "withdraw", index)
+```
+
+If you don't know the index, retrieve the list of tokens for
+your account (check bellow).
+
 If you only have 1 lock, then you can let the argument empty.
+
+```lua
+contract.call(token_locker, "withdraw")
+```
 
 If you have locked aergo token then you will receive WAERGO back. To
 convert to native tokens just use the `unwrap` function on the
@@ -62,8 +73,12 @@ WAERGO contract.
 ## Locked Tokens per Account
 
 To get the list of locked tokens for an account, use the
-`locks_per_account()` function, passing the account address as the
+`locks_per_account` function, passing the account address as the
 argument.
+
+```lua
+local list = contract.call(token_locker, "locks_per_account", user_address)
+```
 
 If retrieving for your own account, just let the argument empty (nil).
 
@@ -73,8 +88,12 @@ It returns a JSON array with information about each lock.
 ## Locks per Token
 
 To get the list of locks for a token, use the
-`locks_per_token()` function, passing the token address as the
+`locks_per_token` function, passing the token address as the
 argument.
+
+```lua
+local list = contract.call(token_locker, "locks_per_token", token_address)
+```
 
 It returns a JSON array with information about each lock.
 
@@ -82,4 +101,8 @@ It returns a JSON array with information about each lock.
 ## Total Locked Amount per Token
 
 To discover the total locked amount for a specific token we use the
-`get_total_locked()` function, passing the token address as the argument.
+`get_total_locked` function, passing the token address as the argument.
+
+```lua
+local total_locked = contract.call(token_locker, "get_total_locked", token_address)
+```
