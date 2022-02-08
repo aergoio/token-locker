@@ -67,12 +67,16 @@ argument.
 
 If retrieving for your own account, just let the argument empty (nil).
 
+It returns a JSON array with information about each lock.
 
-## Locked Tokens per Account
+
+## Locks per Token
 
 To get the list of locks for a token, use the
 `locks_per_token()` function, passing the token address as the
 argument.
+
+It returns a JSON array with information about each lock.
 
 
 ## Total Locked Amount per Token
