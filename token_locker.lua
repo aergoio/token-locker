@@ -71,6 +71,9 @@ function tokensReceived(operator, from, amount, period)
     expiration_time = system.getTimestamp() + period
   end
 
+  -- convert the amount to string
+  amount = bignum.tostring(amount)
+
   local lock = {
     amount = amount,
     token = token,
@@ -140,7 +143,7 @@ function get_total_locked(token)
   local total_locked = bignum.number(0)
   for _,lock in ipairs(token_locks) do
     if lock["expiration_time"] > now then
-      total_locked = total_locked + lock["amount"]
+      total_locked = total_locked + bignum.number(lock["amount"])
     end
   end
   return bignum.tostring(total_locked)
