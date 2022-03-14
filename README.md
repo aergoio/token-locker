@@ -15,8 +15,9 @@ locked amount we can calculate the circulating supply
 # Token Locker Address
 
 <table>
-  <tr><td>testnet</td><td>AmgrjeKuvaEo832iU8Fma4FFN8QgRrnkQkaVSkCj2E8HErP8QETH</td></tr>
-  <tr><td>alphanet</td><td>AmhLjApNGgXSJYU4bMsa8Uwya1Q1BddkYYUvKdYRAyw8R5Tr9Zc5</td></tr>
+  <tr><td>mainnet</td><td>Amg5nZV4qsjSYaageL13gZ2ohc4vdz6JQuVaYHaNnG3o1sBT5bVL</td></tr>
+  <tr><td>testnet</td><td>AmhXTtDUv7ZCJHB8Bz29S5F8pEj5F6gmb6wGLzUn7ADwergXNJAc</td></tr>
+  <tr><td>alphanet</td><td>AmhAvnBPJFhocdon7icguc5Yerd9amHqnVTeJ8bK2tr227pnh2X3</td></tr>
 </table>
 
 
