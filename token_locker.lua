@@ -6,7 +6,8 @@ To use:
 
   Transfer tokens to this contract, and specify the period to
   lock them as an argument in the transfer function.
-  The period is in seconds.
+  The period is either the number of seconds or a string like
+  "on 2530902665".
 
   Example:
 
@@ -49,7 +50,6 @@ end
 function tokensReceived(operator, from, amount, period)
   _typecheck(from, 'address')
   _typecheck(amount, 'ubig')
-  _typecheck(period, 'uint')
 
   -- the contract calling this function
   local token = system.getSender()
@@ -57,10 +57,24 @@ function tokensReceived(operator, from, amount, period)
   -- who sent the tokens
   local account = from
 
+  -- the lock period
+  local expiration_time = 0
+  if type(period) == 'string' and period:sub(1,3) == "on " then
+    expiration_time = tonumber(period:sub(4))
+    assert(expiration_time > system.getTimestamp(), "the fire time must be in the future")
+  else
+    if type(period) ~= 'number' then
+      period = tonumber(period)
+    end
+    assert(period > 0, "the period must be positive")
+    -- calculate the fire time
+    expiration_time = system.getTimestamp() + period
+  end
+
   local lock = {
     amount = amount,
     token = token,
-    expiration_time = system.getTimestamp() + period
+    expiration_time = expiration_time
   }
 
   -- check if this account already have any locked tokens
@@ -81,7 +95,7 @@ function tokensReceived(operator, from, amount, period)
   local lock2 = {
     amount = amount,
     account = account,
-    expiration_time = lock["expiration_time"]
+    expiration_time = expiration_time
   }
 
   -- check if this token already have any locks

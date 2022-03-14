@@ -36,7 +36,11 @@ Where:
 * `token` is the address of the given token to be locked
 * `token_locker` is the address of this contract
 * `amount` is the amount of tokens to be locked, as bignum
-* `period` is the amount of time to lock the tokens, in seconds
+* `period` is the amount of time to lock the tokens
+
+The `period` can be either the an integer representing the number
+of seconds or a string starting with "on " and a unix timestamp
+in seconds, like this: "on 1742070600"
 
 
 ## Locking Aergo Tokens

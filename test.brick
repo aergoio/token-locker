@@ -7,6 +7,12 @@ getstate token_locker
 call ac1 0 AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd transfer `["AmhWzdfUnsj533eUWDzELtTTYSuAcZ9SnXj6wTr7xQhFSyiQmGyS","1500000000000000000",90]`
 call ac1 0 AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd transfer `["AmhWzdfUnsj533eUWDzELtTTYSuAcZ9SnXj6wTr7xQhFSyiQmGyS","2500000000000000000",180]`
 # queries
-call ac1 0 token_locker locks_per_account `[]`
-call ac1 0 token_locker locks_per_token `["AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"]`
-call ac1 0 token_locker get_total_locked `["AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"]`
+query token_locker locks_per_account `["AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1"]` `2`
+query token_locker locks_per_token `["AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"]` `2`
+query token_locker get_total_locked `["AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"]` `"4000000000000000000"`
+# lock using specific date
+call ac1 0 AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd transfer `["AmhWzdfUnsj533eUWDzELtTTYSuAcZ9SnXj6wTr7xQhFSyiQmGyS","1500000000000000000","on 2530902665"]`
+# queries
+query token_locker locks_per_account `["AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1"]` `3`
+query token_locker locks_per_token `["AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"]` `3`
+query token_locker get_total_locked `["AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"]` `"5500000000000000000"`
