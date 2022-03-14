@@ -119,13 +119,13 @@ function locks_per_account(account)
     _typecheck(account, 'address')
   end
   local account_locks = _user_locks[account]
-  return json.encode(account_locks)
+  return account_locks
 end
 
 function locks_per_token(token)
   _typecheck(token, 'address')
   local token_locks = _token_locks[token]
-  return json.encode(token_locks)
+  return token_locks
 end
 
 -- return the total amount that is really locked,
