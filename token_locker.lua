@@ -26,12 +26,12 @@ state.var {
 -- @param t (string) expected type
 local function _typecheck(x, t)
   if (x and t == 'address') then
-    assert(type(x) == 'string', "address must be string type")
+    assert(type(x) == 'string', "the address must be in string format")
     -- check address length
-    assert(52 == #x, string.format("invalid address length: %s (%s)", x, #x))
+    assert(#x == 52, string.format("invalid address length: %s (%s)", x, #x))
     -- check character
     local invalidChar = string.match(x, '[^123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]')
-    assert(nil == invalidChar, string.format("invalid address format: %s contains invalid char %s", x, invalidChar or 'nil'))
+    assert(invalidChar == nil, string.format("invalid address format: %s contains invalid char %s", x, invalidChar or 'nil'))
   elseif (x and t == 'ubig') then
     -- check unsigned bignum
     assert(bignum.isbignum(x), string.format("invalid type: %s != %s", type(x), t))
@@ -43,11 +43,11 @@ local function _typecheck(x, t)
     assert(x >= 0, "the number must be 0 or positive")
   else
     -- check default lua types
-    assert(type(x) == t, string.format("invalid type: %s != %s", type(x), t or 'nil'))
+    assert(type(x) == t, "expected %s but got %s", t, type(x))
   end
 end
 
-function tokensReceived(operator, from, amount, period)
+function tokensReceived(operator, from, amount, period, to)
   _typecheck(from, 'address')
   _typecheck(amount, 'ubig')
 
@@ -56,6 +56,11 @@ function tokensReceived(operator, from, amount, period)
 
   -- who sent the tokens
   local account = from
+  -- if there is a destination (locked transfer)
+  if to ~= nil then
+    _typecheck(to, 'address')
+    account = to
+  end
 
   -- the lock period
   local expiration_time = 0
