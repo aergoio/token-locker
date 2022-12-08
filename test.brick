@@ -1,18 +1,203 @@
 inject ac1 100000000000000000000
+inject ac2 100000000000000000000
+inject ac3 100000000000000000000
+inject ac4 100000000000000000000
+# ac1 = AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1
+# ac2 = AmgeSw3M3V3orBMjf1j98kGne4WycnmQWVTJe6MYNrQ2wuVz3Li2
+# ac3 = Amh472hZcaLquvL4ZWoyVEYAoH3ZLAtMR2sw8xy9FnNBwhwF6Ktd
+# ac4 = Amgs21ryYenrKGM8HmJLQBikfuh9yd1ZzbFT993wS5qD36ssFKJy
+# ac5 = AmhTyX6Jy6tDkLSzt5o4Vy6hRRmrRXZip8yD3kq9VeqYK6bG8Wey
+
+# deploy contracts
+
 deploy ac1 0 arc1_factory ../ARC1-Extensions/factory/output.lua []
-# deploy ac1 0 waergo ../wrapped-aergo/waergo.lua []
+deploy ac1 0 waergo ../wrapped-aergo/output.lua []
 deploy ac1 0 token_locker token_locker.lua `[]`
-call ac1 0 arc1_factory new_token `["Ethereum","ETH",18,1000,{}]`
+# WAERGO = AmgPir5CYRZhu8Ny6LaNLbcKeqkiCQEgLSrfiKLPUBqXDt7rtWGB
+# token_locker = AmhWzdfUnsj533eUWDzELtTTYSuAcZ9SnXj6wTr7xQhFSyiQmGyS
+
+# create some ARC1 tokens
+
+call ac1 0 arc1_factory new_token `["Aergo GEM","GEM",18,1000,{}]`
+call ac1 0 arc1_factory new_token `["Aergo USD","AUSD",18,1000,{}]`
+# GEM  = AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd
+# AUSD = AmhpvJxVXrxTPeCbE2jEpR8S933oCtXfXWr6jR8ewuX9iP2wPSTM
+
 getstate token_locker
-call ac1 0 AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd transfer `["AmhWzdfUnsj533eUWDzELtTTYSuAcZ9SnXj6wTr7xQhFSyiQmGyS","1500000000000000000",90]`
-call ac1 0 AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd transfer `["AmhWzdfUnsj533eUWDzELtTTYSuAcZ9SnXj6wTr7xQhFSyiQmGyS","2500000000000000000",180]`
+
+# set the current timestamp
+
+timestamp 1670469000
+
+# lock tokens
+
+call ac1 0 AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd transfer `["AmhWzdfUnsj533eUWDzELtTTYSuAcZ9SnXj6wTr7xQhFSyiQmGyS","1500000000000000000",90]` ``
+call ac1 0 AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd transfer `["AmhWzdfUnsj533eUWDzELtTTYSuAcZ9SnXj6wTr7xQhFSyiQmGyS","2500000000000000000",180]` ``
+
 # queries
-query token_locker locks_per_account `["AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1"]` `2`
-query token_locker locks_per_token `["AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"]` `2`
+
+query token_locker locks_per_account `["AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1"]` `[{"amount":"1500000000000000000","expiration_time":1670469090,"token":"AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"},{"amount":"2500000000000000000","expiration_time":1670469180,"token":"AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"}]`
+
+query token_locker locks_per_token `["AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"]` `[{"account":"AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1","amount":"1500000000000000000","expiration_time":1670469090},{"account":"AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1","amount":"2500000000000000000","expiration_time":1670469180}]`
+
 query token_locker get_total_locked `["AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"]` `"4000000000000000000"`
+
 # lock using specific date
-call ac1 0 AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd transfer `["AmhWzdfUnsj533eUWDzELtTTYSuAcZ9SnXj6wTr7xQhFSyiQmGyS","1500000000000000000","on 2530902665"]`
+
+call ac1 0 AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd transfer `["AmhWzdfUnsj533eUWDzELtTTYSuAcZ9SnXj6wTr7xQhFSyiQmGyS","1500000000000000000","on 2530902665"]` ``
+
 # queries
-query token_locker locks_per_account `["AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1"]` `3`
-query token_locker locks_per_token `["AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"]` `3`
+
+query token_locker locks_per_account `["AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1"]` `[{"amount":"1500000000000000000","expiration_time":1670469090,"token":"AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"},{"amount":"2500000000000000000","expiration_time":1670469180,"token":"AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"},{"amount":"1500000000000000000","expiration_time":2530902665,"token":"AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"}]`
+
+query token_locker locks_per_token `["AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"]` `[{"account":"AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1","amount":"1500000000000000000","expiration_time":1670469090},{"account":"AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1","amount":"2500000000000000000","expiration_time":1670469180},{"account":"AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1","amount":"1500000000000000000","expiration_time":2530902665}]`
+
 query token_locker get_total_locked `["AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"]` `"5500000000000000000"`
+
+# still_locked: xxx, free_to_withdraw: yyy, total: zzz
+
+
+# lock-transfer tokens
+
+call ac1 0 AmhpvJxVXrxTPeCbE2jEpR8S933oCtXfXWr6jR8ewuX9iP2wPSTM transfer `["AmhWzdfUnsj533eUWDzELtTTYSuAcZ9SnXj6wTr7xQhFSyiQmGyS","2100000000000000000","on 2530902001","AmgeSw3M3V3orBMjf1j98kGne4WycnmQWVTJe6MYNrQ2wuVz3Li2"]` ``
+
+call ac1 0 AmhpvJxVXrxTPeCbE2jEpR8S933oCtXfXWr6jR8ewuX9iP2wPSTM transfer `["AmhWzdfUnsj533eUWDzELtTTYSuAcZ9SnXj6wTr7xQhFSyiQmGyS","2200000000000000000","on 2530902002","Amh472hZcaLquvL4ZWoyVEYAoH3ZLAtMR2sw8xy9FnNBwhwF6Ktd"]` ``
+
+
+# queries
+
+query token_locker locks_per_token `["AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"]` `[{"account":"AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1","amount":"1500000000000000000","expiration_time":1670469090},{"account":"AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1","amount":"2500000000000000000","expiration_time":1670469180},{"account":"AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1","amount":"1500000000000000000","expiration_time":2530902665}]`
+
+query token_locker locks_per_token `["AmhpvJxVXrxTPeCbE2jEpR8S933oCtXfXWr6jR8ewuX9iP2wPSTM"]` `[{"account":"AmgeSw3M3V3orBMjf1j98kGne4WycnmQWVTJe6MYNrQ2wuVz3Li2","amount":"2100000000000000000","expiration_time":2530902001},{"account":"Amh472hZcaLquvL4ZWoyVEYAoH3ZLAtMR2sw8xy9FnNBwhwF6Ktd","amount":"2200000000000000000","expiration_time":2530902002}]`
+
+query token_locker locks_per_account `["AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1"]` `[{"amount":"1500000000000000000","expiration_time":1670469090,"token":"AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"},{"amount":"2500000000000000000","expiration_time":1670469180,"token":"AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"},{"amount":"1500000000000000000","expiration_time":2530902665,"token":"AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"}]`
+
+query token_locker locks_per_account `["AmgeSw3M3V3orBMjf1j98kGne4WycnmQWVTJe6MYNrQ2wuVz3Li2"]` `[{"amount":"2100000000000000000","expiration_time":2530902001,"token":"AmhpvJxVXrxTPeCbE2jEpR8S933oCtXfXWr6jR8ewuX9iP2wPSTM"}]`
+
+query token_locker locks_per_account `["Amh472hZcaLquvL4ZWoyVEYAoH3ZLAtMR2sw8xy9FnNBwhwF6Ktd"]` `[{"amount":"2200000000000000000","expiration_time":2530902002,"token":"AmhpvJxVXrxTPeCbE2jEpR8S933oCtXfXWr6jR8ewuX9iP2wPSTM"}]`
+
+query token_locker locks_per_account `["Amgs21ryYenrKGM8HmJLQBikfuh9yd1ZzbFT993wS5qD36ssFKJy"]` `null`
+
+query token_locker locks_per_account `["AmhTyX6Jy6tDkLSzt5o4Vy6hRRmrRXZip8yD3kq9VeqYK6bG8Wey"]` `null`
+
+query token_locker get_total_locked `["AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"]` `"5500000000000000000"`
+
+query token_locker get_total_locked `["AmhpvJxVXrxTPeCbE2jEpR8S933oCtXfXWr6jR8ewuX9iP2wPSTM"]` `"4300000000000000000"`
+
+# check the balances
+
+query AmhpvJxVXrxTPeCbE2jEpR8S933oCtXfXWr6jR8ewuX9iP2wPSTM balanceOf `["AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1"]` `{"_bignum":"995700000000000000000"}`
+query AmhpvJxVXrxTPeCbE2jEpR8S933oCtXfXWr6jR8ewuX9iP2wPSTM balanceOf `["AmgeSw3M3V3orBMjf1j98kGne4WycnmQWVTJe6MYNrQ2wuVz3Li2"]` `{"_bignum":"0"}`
+query AmhpvJxVXrxTPeCbE2jEpR8S933oCtXfXWr6jR8ewuX9iP2wPSTM balanceOf `["Amh472hZcaLquvL4ZWoyVEYAoH3ZLAtMR2sw8xy9FnNBwhwF6Ktd"]` `{"_bignum":"0"}`
+query AmhpvJxVXrxTPeCbE2jEpR8S933oCtXfXWr6jR8ewuX9iP2wPSTM balanceOf `["Amgs21ryYenrKGM8HmJLQBikfuh9yd1ZzbFT993wS5qD36ssFKJy"]` `{"_bignum":"0"}`
+query AmhpvJxVXrxTPeCbE2jEpR8S933oCtXfXWr6jR8ewuX9iP2wPSTM balanceOf `["AmhTyX6Jy6tDkLSzt5o4Vy6hRRmrRXZip8yD3kq9VeqYK6bG8Wey"]` `{"_bignum":"0"}`
+
+query AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd balanceOf `["AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1"]` `{"_bignum":"994500000000000000000"}`
+query AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd balanceOf `["AmgeSw3M3V3orBMjf1j98kGne4WycnmQWVTJe6MYNrQ2wuVz3Li2"]` `{"_bignum":"0"}`
+query AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd balanceOf `["Amh472hZcaLquvL4ZWoyVEYAoH3ZLAtMR2sw8xy9FnNBwhwF6Ktd"]` `{"_bignum":"0"}`
+query AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd balanceOf `["Amgs21ryYenrKGM8HmJLQBikfuh9yd1ZzbFT993wS5qD36ssFKJy"]` `{"_bignum":"0"}`
+query AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd balanceOf `["AmhTyX6Jy6tDkLSzt5o4Vy6hRRmrRXZip8yD3kq9VeqYK6bG8Wey"]` `{"_bignum":"0"}`
+
+
+
+# try to withdraw by the owner - still locked
+
+call ac1 0 token_locker withdraw `[1]` `these tokens are locked`
+call ac1 0 token_locker withdraw `[2]` `these tokens are locked`
+call ac1 0 token_locker withdraw `[3]` `these tokens are locked`
+call ac1 0 token_locker withdraw `[4]` `no locked tokens at this index`
+
+# try to withdraw by the others - still locked
+
+call ac2 0 token_locker withdraw `[1]` `these tokens are locked`
+call ac2 0 token_locker withdraw `[2]` `no locked tokens at this index`
+call ac3 0 token_locker withdraw `[1]` `these tokens are locked`
+call ac3 0 token_locker withdraw `[2]` `no locked tokens at this index`
+call ac4 0 token_locker withdraw `[1]` `no locked tokens for this account`
+call ac5 0 token_locker withdraw `[1]` `no locked tokens for this account`
+
+# advance the timestamp
+
+timestamp +100
+
+# try to withdraw by the others - permission denied
+
+call ac4 0 token_locker withdraw `[1]` `no locked tokens for this account`
+call ac5 0 token_locker withdraw `[1]` `no locked tokens for this account`
+
+# try to withdraw by the owner - now some are available
+
+call ac1 0 token_locker withdraw `[1]` `` ``
+call ac1 0 token_locker withdraw `[1]` `these tokens are locked`
+call ac1 0 token_locker withdraw `[2]` `these tokens are locked`
+call ac1 0 token_locker withdraw `[3]` `no locked tokens at this index`
+
+call ac2 0 token_locker withdraw `[1]` `these tokens are locked`
+call ac2 0 token_locker withdraw `[2]` `no locked tokens at this index`
+call ac3 0 token_locker withdraw `[1]` `these tokens are locked`
+call ac3 0 token_locker withdraw `[2]` `no locked tokens at this index`
+
+
+
+# queries
+
+query token_locker locks_per_token `["AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"]` `[{"account":"AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1","amount":"2500000000000000000","expiration_time":1670469180},{"account":"AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1","amount":"1500000000000000000","expiration_time":2530902665}]`
+
+query token_locker locks_per_token `["AmhpvJxVXrxTPeCbE2jEpR8S933oCtXfXWr6jR8ewuX9iP2wPSTM"]` `[{"account":"AmgeSw3M3V3orBMjf1j98kGne4WycnmQWVTJe6MYNrQ2wuVz3Li2","amount":"2100000000000000000","expiration_time":2530902001},{"account":"Amh472hZcaLquvL4ZWoyVEYAoH3ZLAtMR2sw8xy9FnNBwhwF6Ktd","amount":"2200000000000000000","expiration_time":2530902002}]`
+
+query token_locker locks_per_account `["AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1"]` `[{"amount":"2500000000000000000","expiration_time":1670469180,"token":"AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"},{"amount":"1500000000000000000","expiration_time":2530902665,"token":"AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"}]`
+
+query token_locker locks_per_account `["AmgeSw3M3V3orBMjf1j98kGne4WycnmQWVTJe6MYNrQ2wuVz3Li2"]` `[{"amount":"2100000000000000000","expiration_time":2530902001,"token":"AmhpvJxVXrxTPeCbE2jEpR8S933oCtXfXWr6jR8ewuX9iP2wPSTM"}]`
+
+query token_locker locks_per_account `["Amh472hZcaLquvL4ZWoyVEYAoH3ZLAtMR2sw8xy9FnNBwhwF6Ktd"]` `[{"amount":"2200000000000000000","expiration_time":2530902002,"token":"AmhpvJxVXrxTPeCbE2jEpR8S933oCtXfXWr6jR8ewuX9iP2wPSTM"}]`
+
+query token_locker locks_per_account `["Amgs21ryYenrKGM8HmJLQBikfuh9yd1ZzbFT993wS5qD36ssFKJy"]` `null`
+
+query token_locker locks_per_account `["AmhTyX6Jy6tDkLSzt5o4Vy6hRRmrRXZip8yD3kq9VeqYK6bG8Wey"]` `null`
+
+query token_locker get_total_locked `["AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"]` `"4000000000000000000"`
+
+query token_locker get_total_locked `["AmhpvJxVXrxTPeCbE2jEpR8S933oCtXfXWr6jR8ewuX9iP2wPSTM"]` `"4300000000000000000"`
+
+
+
+# advance the timestamp
+
+timestamp 2530902670
+
+# try to withdraw by the others - permission denied
+
+call ac4 0 token_locker withdraw `[1]` `no locked tokens for this account`
+call ac5 0 token_locker withdraw `[1]` `no locked tokens for this account`
+
+# try to withdraw by the owner - now all are available
+
+call ac1 0 token_locker withdraw `[1]` `` ``
+call ac1 0 token_locker withdraw `[1]` `` ``
+call ac1 0 token_locker withdraw `[1]` `no locked tokens for this account`
+
+call ac2 0 token_locker withdraw `[1]` `` ``
+call ac2 0 token_locker withdraw `[1]` `no locked tokens for this account`
+
+call ac3 0 token_locker withdraw `[1]` `` ``
+call ac3 0 token_locker withdraw `[1]` `no locked tokens for this account`
+
+# final query
+
+query token_locker locks_per_account `["AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1"]` `null`
+query token_locker locks_per_token `["AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"]` `null`
+query token_locker get_total_locked `["AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"]` `"0"`
+
+# check the final balances
+
+query AmhpvJxVXrxTPeCbE2jEpR8S933oCtXfXWr6jR8ewuX9iP2wPSTM balanceOf `["AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1"]` `{"_bignum":"995700000000000000000"}`
+query AmhpvJxVXrxTPeCbE2jEpR8S933oCtXfXWr6jR8ewuX9iP2wPSTM balanceOf `["AmgeSw3M3V3orBMjf1j98kGne4WycnmQWVTJe6MYNrQ2wuVz3Li2"]` `{"_bignum":"2100000000000000000"}`
+query AmhpvJxVXrxTPeCbE2jEpR8S933oCtXfXWr6jR8ewuX9iP2wPSTM balanceOf `["Amh472hZcaLquvL4ZWoyVEYAoH3ZLAtMR2sw8xy9FnNBwhwF6Ktd"]` `{"_bignum":"2200000000000000000"}`
+query AmhpvJxVXrxTPeCbE2jEpR8S933oCtXfXWr6jR8ewuX9iP2wPSTM balanceOf `["Amgs21ryYenrKGM8HmJLQBikfuh9yd1ZzbFT993wS5qD36ssFKJy"]` `{"_bignum":"0"}`
+query AmhpvJxVXrxTPeCbE2jEpR8S933oCtXfXWr6jR8ewuX9iP2wPSTM balanceOf `["AmhTyX6Jy6tDkLSzt5o4Vy6hRRmrRXZip8yD3kq9VeqYK6bG8Wey"]` `{"_bignum":"0"}`
+
+query AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd balanceOf `["AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1"]` `{"_bignum":"1000000000000000000000"}`
+query AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd balanceOf `["AmgeSw3M3V3orBMjf1j98kGne4WycnmQWVTJe6MYNrQ2wuVz3Li2"]` `{"_bignum":"0"}`
+query AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd balanceOf `["Amh472hZcaLquvL4ZWoyVEYAoH3ZLAtMR2sw8xy9FnNBwhwF6Ktd"]` `{"_bignum":"0"}`
+query AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd balanceOf `["Amgs21ryYenrKGM8HmJLQBikfuh9yd1ZzbFT993wS5qD36ssFKJy"]` `{"_bignum":"0"}`
+query AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd balanceOf `["AmhTyX6Jy6tDkLSzt5o4Vy6hRRmrRXZip8yD3kq9VeqYK6bG8Wey"]` `{"_bignum":"0"}`
