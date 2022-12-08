@@ -26,10 +26,15 @@ locked amount we can calculate the circulating supply
 Transfer tokens to this contract, and specify the period to
 lock them as an argument in the transfer function.
 
+It is also possible to transfer the tokens to another account and
+have them locked for a period. Use the last (optional) argument
+for this purpose. In this case the user will only be able to withdraw
+the tokens after the locking period.
+
 Example:
 
 ```lua
-contract.call(token, "transfer", token_locker, amount, period)
+contract.call(token, "transfer", token_locker, amount, period, recipient)
 ```
 
 Where:
@@ -38,6 +43,7 @@ Where:
 * `token_locker` is the address of this contract
 * `amount` is the amount of tokens to be locked, as bignum
 * `period` is the amount of time to lock the tokens
+* `recipient` is the address of the recipient, used when lock-transferring tokens (optional)
 
 The `period` can be either the an integer representing the number
 of seconds or a string starting with "on " and a unix timestamp
