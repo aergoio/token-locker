@@ -187,6 +187,7 @@ call ac3 0 token_locker withdraw `[1]` `no locked tokens for this account`
 query token_locker locks_per_account `["AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1"]` `null`
 query token_locker locks_per_token `["AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"]` `null`
 query token_locker get_total_locked `["AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"]` `"0"`
+query token_locker get_total_locked `["AmhpvJxVXrxTPeCbE2jEpR8S933oCtXfXWr6jR8ewuX9iP2wPSTM"]` `"0"`
 
 # check the final balances
 

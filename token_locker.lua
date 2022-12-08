@@ -136,13 +136,13 @@ function locks_per_token(token)
   return token_locks
 end
 
--- return the total amount that is really locked,
--- ie, in which the lock has not expired
+-- return the total amount that is really locked.
+-- ie: in which the lock has not yet expired
 function get_total_locked(token)
   _typecheck(token, 'address')
   local token_locks = _token_locks[token]
   if token_locks == nil then
-    return bignum.tostring(bignum.number(0))
+    return "0"
   end
   local now = system.getTimestamp()
   local total_locked = bignum.number(0)
