@@ -2,6 +2,7 @@ inject ac1 100000000000000000000
 inject ac2 100000000000000000000
 inject ac3 100000000000000000000
 inject ac4 100000000000000000000
+inject ac5 100000000000000000000
 # ac1 = AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1
 # ac2 = AmgeSw3M3V3orBMjf1j98kGne4WycnmQWVTJe6MYNrQ2wuVz3Li2
 # ac3 = Amh472hZcaLquvL4ZWoyVEYAoH3ZLAtMR2sw8xy9FnNBwhwF6Ktd
@@ -202,3 +203,73 @@ query AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd balanceOf `["AmgeSw3M
 query AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd balanceOf `["Amh472hZcaLquvL4ZWoyVEYAoH3ZLAtMR2sw8xy9FnNBwhwF6Ktd"]` `{"_bignum":"0"}`
 query AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd balanceOf `["Amgs21ryYenrKGM8HmJLQBikfuh9yd1ZzbFT993wS5qD36ssFKJy"]` `{"_bignum":"0"}`
 query AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd balanceOf `["AmhTyX6Jy6tDkLSzt5o4Vy6hRRmrRXZip8yD3kq9VeqYK6bG8Wey"]` `{"_bignum":"0"}`
+
+
+
+
+# lock Aergo tokens (using WAERGO)
+
+call ac4 1230000000000000000 AmgPir5CYRZhu8Ny6LaNLbcKeqkiCQEgLSrfiKLPUBqXDt7rtWGB wrap_to `["AmhWzdfUnsj533eUWDzELtTTYSuAcZ9SnXj6wTr7xQhFSyiQmGyS","on 2530903001"]` ``
+
+call ac4 1250000000000000000 AmgPir5CYRZhu8Ny6LaNLbcKeqkiCQEgLSrfiKLPUBqXDt7rtWGB wrap_to `["AmhWzdfUnsj533eUWDzELtTTYSuAcZ9SnXj6wTr7xQhFSyiQmGyS","on 2530903002","AmhTyX6Jy6tDkLSzt5o4Vy6hRRmrRXZip8yD3kq9VeqYK6bG8Wey"]` ``
+
+# queries
+
+query token_locker locks_per_token `["AmgPir5CYRZhu8Ny6LaNLbcKeqkiCQEgLSrfiKLPUBqXDt7rtWGB"]` `[{"account":"Amgs21ryYenrKGM8HmJLQBikfuh9yd1ZzbFT993wS5qD36ssFKJy","amount":"1230000000000000000","expiration_time":2530903001},{"account":"AmhTyX6Jy6tDkLSzt5o4Vy6hRRmrRXZip8yD3kq9VeqYK6bG8Wey","amount":"1250000000000000000","expiration_time":2530903002}]`
+
+query token_locker locks_per_token `["AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"]` `null`
+
+query token_locker locks_per_token `["AmhpvJxVXrxTPeCbE2jEpR8S933oCtXfXWr6jR8ewuX9iP2wPSTM"]` `null`
+
+query token_locker locks_per_account `["AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1"]` `null`
+
+query token_locker locks_per_account `["AmgeSw3M3V3orBMjf1j98kGne4WycnmQWVTJe6MYNrQ2wuVz3Li2"]` `null`
+
+query token_locker locks_per_account `["Amh472hZcaLquvL4ZWoyVEYAoH3ZLAtMR2sw8xy9FnNBwhwF6Ktd"]` `null`
+
+query token_locker locks_per_account `["Amgs21ryYenrKGM8HmJLQBikfuh9yd1ZzbFT993wS5qD36ssFKJy"]` `[{"amount":"1230000000000000000","expiration_time":2530903001,"token":"AmgPir5CYRZhu8Ny6LaNLbcKeqkiCQEgLSrfiKLPUBqXDt7rtWGB"}]`
+
+query token_locker locks_per_account `["AmhTyX6Jy6tDkLSzt5o4Vy6hRRmrRXZip8yD3kq9VeqYK6bG8Wey"]` `[{"amount":"1250000000000000000","expiration_time":2530903002,"token":"AmgPir5CYRZhu8Ny6LaNLbcKeqkiCQEgLSrfiKLPUBqXDt7rtWGB"}]`
+
+query token_locker get_total_locked `["AmgPir5CYRZhu8Ny6LaNLbcKeqkiCQEgLSrfiKLPUBqXDt7rtWGB"]` `"2480000000000000000"`
+
+query token_locker get_total_locked `["AmgvNk818bMfksxLswodwJRWAMEjK3WaLwvPCUQh27ipMfPaGkGd"]` `"0"`
+
+query token_locker get_total_locked `["AmhpvJxVXrxTPeCbE2jEpR8S933oCtXfXWr6jR8ewuX9iP2wPSTM"]` `"0"`
+
+# try to withdraw - still locked
+
+call ac1 0 token_locker withdraw `[1]` `no locked tokens for this account`
+call ac2 0 token_locker withdraw `[1]` `no locked tokens for this account`
+call ac3 0 token_locker withdraw `[1]` `no locked tokens for this account`
+
+call ac4 0 token_locker withdraw `[1]` `these tokens are locked`
+call ac5 0 token_locker withdraw `[1]` `these tokens are locked`
+call ac4 0 token_locker withdraw `[2]` `no locked tokens at this index`
+call ac5 0 token_locker withdraw `[2]` `no locked tokens at this index`
+
+# advance the timestamp
+
+timestamp 2530903010
+
+# try to withdraw - unlocked
+
+call ac1 0 token_locker withdraw `[1]` `no locked tokens for this account`
+call ac2 0 token_locker withdraw `[1]` `no locked tokens for this account`
+call ac3 0 token_locker withdraw `[1]` `no locked tokens for this account`
+
+call ac4 0 token_locker withdraw `[2]` `no locked tokens at this index`
+call ac4 0 token_locker withdraw `[1]` `` ``
+call ac4 0 token_locker withdraw `[1]` `no locked tokens for this account`
+
+call ac5 0 token_locker withdraw `[2]` `no locked tokens at this index`
+call ac5 0 token_locker withdraw `[1]` `` ``
+call ac5 0 token_locker withdraw `[1]` `no locked tokens for this account`
+
+# check balances
+
+query AmgPir5CYRZhu8Ny6LaNLbcKeqkiCQEgLSrfiKLPUBqXDt7rtWGB balanceOf `["AmgMPiyZYr19kQ1kHFNiGenez1CRTBqNWqppj6gGZGEP6qszDGe1"]` `{"_bignum":"0"}`
+query AmgPir5CYRZhu8Ny6LaNLbcKeqkiCQEgLSrfiKLPUBqXDt7rtWGB balanceOf `["AmgeSw3M3V3orBMjf1j98kGne4WycnmQWVTJe6MYNrQ2wuVz3Li2"]` `{"_bignum":"0"}`
+query AmgPir5CYRZhu8Ny6LaNLbcKeqkiCQEgLSrfiKLPUBqXDt7rtWGB balanceOf `["Amh472hZcaLquvL4ZWoyVEYAoH3ZLAtMR2sw8xy9FnNBwhwF6Ktd"]` `{"_bignum":"0"}`
+query AmgPir5CYRZhu8Ny6LaNLbcKeqkiCQEgLSrfiKLPUBqXDt7rtWGB balanceOf `["Amgs21ryYenrKGM8HmJLQBikfuh9yd1ZzbFT993wS5qD36ssFKJy"]` `{"_bignum":"1230000000000000000"}`
+query AmgPir5CYRZhu8Ny6LaNLbcKeqkiCQEgLSrfiKLPUBqXDt7rtWGB balanceOf `["AmhTyX6Jy6tDkLSzt5o4Vy6hRRmrRXZip8yD3kq9VeqYK6bG8Wey"]` `{"_bignum":"1250000000000000000"}`
