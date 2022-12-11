@@ -198,11 +198,11 @@ function extend_lock_period(index, new_expiration_time)
       lock2["expiration_time"] = new_expiration_time
       -- save the updated lock at the given index
       token_locks[index] = lock2
-      -- save the updated list
-      _token_locks[token] = token_locks
       break
     end
   end
+
+  _token_locks[token] = token_locks
 
   -- emit an event
   contract.event("lock_extended", account, token, amount, old_expiration_time, new_expiration_time)
