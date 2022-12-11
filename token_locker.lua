@@ -38,12 +38,12 @@ local function _typecheck(x, t)
     assert(x >= bignum.number(0), string.format("%s must be positive number", bignum.tostring(x)))
   elseif (x and t == 'uint') then
     -- check unsigned integer
-    assert(type(x) == 'number', string.format("invalid type: %s != number", type(x)))
+    assert(type(x) == 'number', string.format("expected 'number' but got '%s'", type(x)))
     assert(math.floor(x) == x, "the number must be an integer")
     assert(x >= 0, "the number must be 0 or positive")
   else
     -- check default lua types
-    assert(type(x) == t, "expected %s but got %s", t, type(x))
+    assert(type(x) == t, string.format("expected '%s' but got '%s'", t, type(x)))
   end
 end
 
@@ -66,7 +66,7 @@ function tokensReceived(operator, from, amount, period, to)
   local expiration_time = 0
   if type(period) == 'string' and period:sub(1,3) == "on " then
     expiration_time = tonumber(period:sub(4))
-    assert(expiration_time > system.getTimestamp(), "the fire time must be in the future")
+    assert(expiration_time > system.getTimestamp(), "the expiration time must be in the future")
   else
     if type(period) ~= 'number' then
       period = tonumber(period)
@@ -154,6 +154,61 @@ function get_total_locked(token)
   return bignum.tostring(total_locked)
 end
 
+function extend_lock_period(index, new_expiration_time)
+  _typecheck(new_expiration_time, 'uint')
+
+  -- transaction signer or contract
+  local account = system.getSender()
+
+  -- get the locked tokens from this account
+  local account_locks = _user_locks[account]
+  assert(account_locks ~= nil, "no locked tokens for this account")
+
+  -- get the locked tokens at the given index
+  if index == nil then
+    index = 1
+  end
+  local lock = account_locks[index]
+  assert(lock ~= nil, "no locked tokens at this index")
+
+  local token = lock["token"]
+  local amount = lock["amount"]
+  local old_expiration_time = lock["expiration_time"]
+
+  -- check the new expiration time
+  assert(new_expiration_time > system.getTimestamp(), "the new expiration time must be in the future")
+  assert(new_expiration_time > old_expiration_time, "the new expiration time must be after the current one")
+
+  -- save the new expiration time
+  lock["expiration_time"] = new_expiration_time
+  -- save the updated lock at the given index
+  account_locks[index] = lock
+  -- save the updated list of locks for this account
+  _user_locks[account] = account_locks
+
+  -- update the list of locks for this token
+
+  local token_locks = _token_locks[token]
+
+  for index,lock2 in ipairs(token_locks) do
+    if lock2["expiration_time"] == old_expiration_time and
+        lock2["account"] == account and
+        lock2["amount"] == amount then
+      -- save the new expiration time
+      lock2["expiration_time"] = new_expiration_time
+      -- save the updated lock at the given index
+      token_locks[index] = lock2
+      -- save the updated list
+      _token_locks[token] = token_locks
+      break
+    end
+  end
+
+  -- emit an event
+  contract.event("lock_extended", account, token, amount, old_expiration_time, new_expiration_time)
+
+end
+
 function withdraw(index)
 
   -- transaction signer or contract
@@ -216,5 +271,5 @@ function withdraw(index)
 
 end
 
-abi.register(tokensReceived, withdraw)
+abi.register(tokensReceived, extend_lock_period, withdraw)
 abi.register_view(locks_per_account, locks_per_token, get_total_locked)
